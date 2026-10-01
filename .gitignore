@@ -10,6 +10,9 @@
 # 生产环境密钥（部署用，服务器手动创建，切勿提交）
 .env.prod
 
+# 部署学习手册（仅本地自用，不含密钥但不推远程）
+DEPLOYMENT.md
+
 # ---------- 本地模型权重（约 4.6 GB）----------
 # core/knowledge_base.py、core/reranker.py
 # 通过 .env.local 中的 BGE_M3_MODEL_PATH / RERANKER_MODEL_PATH 指向此目录
