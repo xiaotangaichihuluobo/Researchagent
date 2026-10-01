@@ -66,7 +66,14 @@ class BGEReranker:
         device = "cuda" if torch.cuda.is_available() else "cpu"
 
         logger.info("reranker.loading", model_id=model_path, device=device)
-        self._model = CrossEncoder(model_path, device=device, max_length=512)
+        # low_cpu_mem_usage=False：关掉 accelerate 的「meta 张量 + 分片」低内存加载。
+        # 否则在内存紧张(本进程已加载 BGE-M3 2.2G 后)时，部分权重会停在 meta 设备
+        # (占位、无数据)，随后的 module.to(device) 就抛
+        # “Cannot copy out of meta tensor; no data!”。直接正常载入权重即可。
+        self._model = CrossEncoder(
+            model_path, device=device, max_length=512,
+            automodel_args={"low_cpu_mem_usage": False},
+        )
         # print(f'self._model is {self._model}')
         logger.info("reranker.loaded", model_id=model_path)
     @classmethod
