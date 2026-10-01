@@ -4,6 +4,8 @@ sentence-transformers==3.3.1
 sentencepiece==0.2.1
 torch==2.5.1
 FlagEmbedding>=1.2.0
+# 直接调用 snapshot_download 把缺失模型下载到配置路径（transformers 的传递依赖，这里显式声明）
+huggingface-hub>=0.23.2,<1.0
 
 # ===== Web 框架 =====
 fastapi==0.117.1

@@ -12,6 +12,8 @@ from backend.core.logger import get_logger
 logger = get_logger(__name__)
 backend_path = os.path.dirname(os.path.dirname(__file__))
 RERANK_MAX_INPUT_CHARS = 512   # 截断过长文档，防止超出 CrossEncoder max_length=512
+# 本地缺模型时，从这里联网把权重下载到配置路径。与本地目录名保持一致（见 README）。
+RERANKER_REPO_ID = "BAAI/bge-reranker-large"
 
 
 @dataclass
@@ -25,7 +27,7 @@ class RankedDocument:
 
 class BGEReranker:
     """
-    BGE-Reranker-v2-m3 精排服务（单例）。
+    BGE-Reranker-large 精排服务（单例）。
 
     对 Hybrid 召回的候选文档做 CrossEncoder 精排，
     直接返回 [0, 1] 置信度，无需额外归一化。
@@ -42,7 +44,7 @@ class BGEReranker:
     _instance: Optional["BGEReranker"] = None
 
     def __init__(self):
-        """加载 BGE-Reranker 模型（优先本地、否则回落到 HuggingFace）。
+        """加载 BGE-Reranker 模型（优先走配置路径；本地缺失时联网下载到该路径）。
 
         :return: 无返回值
         """
@@ -55,14 +57,18 @@ class BGEReranker:
             and os.path.isdir(model_path)
             and any(f.endswith((".bin", ".safetensors", ".json")) for f in os.listdir(model_path))
         )
-        # print(f'use_local: {use_local}')
-        model_id = model_path if use_local else "BAAI/bge-reranker-v2-m3"
+        if not use_local:
+            # 本地缺模型或目录不完整 → 从 HF 仓库把权重下载到【配置路径】，不落 ~/.cache
+            from huggingface_hub import snapshot_download
+            logger.info("reranker.downloading", repo_id=RERANKER_REPO_ID, local_dir=model_path)
+            snapshot_download(RERANKER_REPO_ID, local_dir=str(model_path))
+        # 走到这里 model_path 一定本地理就绪（本来就有，或刚下载完成），一律走本地路径
         device = "cuda" if torch.cuda.is_available() else "cpu"
 
-        logger.info("reranker.loading", model_id=model_id, device=device)
-        self._model = CrossEncoder(model_id, device=device, max_length=512)
+        logger.info("reranker.loading", model_id=model_path, device=device)
+        self._model = CrossEncoder(model_path, device=device, max_length=512)
         # print(f'self._model is {self._model}')
-        logger.info("reranker.loaded", model_id=model_id)
+        logger.info("reranker.loaded", model_id=model_path)
     @classmethod
     def get_instance(cls) -> "BGEReranker":
         """获取单例，首次调用时加载模型。

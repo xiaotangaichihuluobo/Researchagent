@@ -14,6 +14,9 @@ from backend.core.logger import get_logger
 
 logger = get_logger(__name__)
 
+# 本地缺模型时，从这里联网把权重下载到配置路径。与本地目录内容一致（README 为 BGE-M3）。
+BGE_M3_REPO_ID = "BAAI/bge-m3"
+
 
 class BGEMEmbedder:
     """
@@ -110,6 +113,16 @@ class BGEMEmbedder:
         """
         if cls._instance is None:
             bge_m3_model_path = os.path.join(backend_path, get_settings().bge_m3_model_path)
+            # 本地缺模型或目录不完整 → 从 HF 仓库把权重下载到【配置路径】，不落 ~/.cache
+            if not (
+                os.path.exists(bge_m3_model_path)
+                and os.path.isdir(bge_m3_model_path)
+                and os.path.isfile(os.path.join(bge_m3_model_path, "config.json"))
+                and any(f.endswith((".bin", ".safetensors")) for f in os.listdir(bge_m3_model_path))
+            ):
+                from huggingface_hub import snapshot_download
+                logger.info("bge_m3.downloading", repo_id=BGE_M3_REPO_ID, local_dir=bge_m3_model_path)
+                snapshot_download(BGE_M3_REPO_ID, local_dir=str(bge_m3_model_path))
             cls._instance = BGEMEmbedder(bge_m3_model_path)
         return cls._instance
 

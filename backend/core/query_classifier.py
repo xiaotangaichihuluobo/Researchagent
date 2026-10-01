@@ -23,6 +23,20 @@ logger = get_logger(__name__)
 LABEL2ID = {"general": 0, "specialized": 1}
 ID2LABEL = {0: "general", 1: "specialized"}
 
+# 本地缺【基座】时，从这里联网把权重下载到配置路径（HF 上存在的 repo id）。
+# 微调产物 query-classifier-finetuned 是本地训练结果、HF 上不存在，无法自动下载，
+# 只能靠 scripts/classifier/train_classifier.py 产出。
+CLASSIFIER_BASE_REPO = "sentence-transformers/all-MiniLM-L6-v2"
+
+
+def _model_dir_ready(path: str) -> bool:
+    """粗略判断该目录是否已含可用模型（config.json + 权重文件）。"""
+    return (
+        os.path.isdir(path)
+        and os.path.isfile(os.path.join(path, "config.json"))
+        and any(f.endswith((".bin", ".safetensors")) for f in os.listdir(path))
+    )
+
 # general 侧置信阈值偏高（0.85）：专业问题被误判成通用问题的代价更高 ——
 # LLM 会用自身知识回答，可能与研报内容矛盾；宁可多走一次 RAG，不放过研报相关问题。
 GENERAL_CONFIDENCE_THRESHOLD = 0.85
@@ -54,6 +68,15 @@ class QueryClassifier:
         settings = get_settings()
         model_id = model_path if model_path else os.path.join(
             backend_path, settings.finetuned_classifier_path)
+
+        # 仅对【基座】路径补自动下载：若加载的是 all-MiniLM-L6-v2 且本地缺失，
+        # 从 HF 下载到该路径；微调产物路径不下载（本地训练产出）。
+        base_path = os.path.join(backend_path, settings.classifier_model_path)
+        if os.path.abspath(model_id) == os.path.abspath(base_path) and not _model_dir_ready(model_id):
+            from huggingface_hub import snapshot_download
+            logger.info("query_classifier.base_downloading",
+                        repo_id=CLASSIFIER_BASE_REPO, local_dir=model_id)
+            snapshot_download(CLASSIFIER_BASE_REPO, local_dir=str(model_id))
 
         device = 0 if torch.cuda.is_available() else -1
         from transformers import pipeline as hf_pipeline
