@@ -99,13 +99,19 @@ async def _fail_task(tenant_id: str, task_id: str, error: Exception) -> None:
     :param error: 触发的异常，用于记日志与 last_error。
     :return: 无返回值。
     """
-    logger.error("runner.pipeline_failed", task_id=task_id, error=str(error))
+    # 空串 error（如无参异常/超时 str() 为 ""）只靠 error= 会丢全部上下文。
+    # 这里补打完整 traceback 并在阶段事件里留栈，定位「到底哪一步崩」不再靠猜。
+    import traceback
+    tb = "".join(traceback.format_exception(type(error), error, error.__traceback__))
+    logger.error("runner.pipeline_failed", task_id=task_id, error=str(error) or repr(error),
+                 trace=tb[-2000:])
     try:
         await repo.update_task_status(
-            tenant_id, task_id, status="failed", last_error=str(error)[:2000], mark_finished=True,
+            tenant_id, task_id, status="failed", last_error=str(error) or repr(error),
+            mark_finished=True,
         )
         await repo.record_stage_event(tenant_id, task_id, "pipeline", "failed",
-                                     {"error": str(error)[:500]})
+                                     {"error": str(error)[:500], "trace": tb[-2000:]})
     except Exception as ce:                         # noqa: BLE001 —— 补偿失败也只能记日志
         logger.error("runner.compensation_failed", task_id=task_id, error=str(ce)[:500])
     # 失败也是终态，主动推给订阅者，别再让前端干等下一次轮询。
