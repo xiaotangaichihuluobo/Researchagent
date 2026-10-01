@@ -68,6 +68,16 @@ async def extract_facts_node(state: ValuationState) -> dict:
     if not items:
         return {"financial_facts": None, "degrade_reason": "未找到任何采集数据"}
 
+    # 采到的 financial_report 里混有 baostock 的指标行（"盈利能力 / 成长性" 等），
+    # 它们不是年度报告，且常缺营收/营收同比/经营现金流。ESL 提取只看年度报告，
+    # 若不过滤，LLM 会把"2026/03/31 盈利能力"当成年份更大的年报，抢走真年报的
+    # 基期位 → 估值报缺营收/现金流。这里统一过滤，prompt 与 source_titles 都用同一份列表。
+    _METRIC_ROW_KEYWORDS = ("盈利能力", "成长性", "偿债能力", "营运能力")
+    items = [it for it in items
+             if not any(k in (it.get("title") or "") for k in _METRIC_ROW_KEYWORDS)]
+    if not items:
+        return {"financial_facts": None, "degrade_reason": "采集数据疑似均属指标类行，未见年度报告"}
+
     prompt = build_extraction_prompt(state.get("company_code", ""), items)
     structured = get_structured_llm("valuation", ExtractionResult)
 

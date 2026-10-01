@@ -87,11 +87,15 @@ def to_financial_facts(rows: list[ReportExtraction],
     """
     if not rows:
         return None
-    base = max(rows, key=lambda r: r.year)
-    if len(rows) >= 2:
-        prev = max((r for r in rows if r.year < base.year), key=lambda r: r.year, default=None)
-    else:
-        prev = None
+    # 基期只从「真年度报告」里选：年度报告必有营收。baostock 的"盈利能力 / 成长性"
+    # 指标行即使被提取模型误判成年份更大的年报，也因缺营收而不进基期候选 ——
+    # 从根上杜绝指标行抢占真年报基期位导致的缺营收/营收同比/经营现金流。
+    annual = [r for r in rows if r.revenue_yi is not None]
+    if not annual:
+        return None
+    base = max(annual, key=lambda r: r.year)
+    rest = [r for r in annual if r.year < base.year]
+    prev = max(rest, key=lambda r: r.year) if rest else None
 
     title = source_titles.get(base.index) or ""
     revenue = _as_extracted(base, "revenue_yi", title)
