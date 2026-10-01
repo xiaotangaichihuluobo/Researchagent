@@ -75,6 +75,15 @@ async def fetch_all_sources_node(state: CollectState) -> dict:
          "industry": company["industry"]},
     ) or {}
 
+    # call_mcp_tool 对【返回单个 dict】的工具会把结果包成 [dict]：它的归一假设是工具
+    # 返回 list（search_knowledge_base / web_search 都返回 list），而 fetch_all_sources
+    # 是唯一一个返回单 dict 的工具，于是 result 拿到 [{"raw_items": ...}] 而不是 dict。
+    # 不解包的话，下面的 result.get("raw_items") 会抛 'list' object has no attribute
+    # 'get' —— 正是不做这段兼容时采集阶段崩溃（collect 停在『进行中』、analyze 不启动）
+    # 的根因。这里兼容两种形态：dict 直接用，[dict] 取下标，[] 兜成 {}。
+    if isinstance(result, list):
+        result = result[0] if result else {}
+
     raw_items = [_raw_from_dict(d) for d in (result.get("raw_items") or [])]
     source_stats = result.get("source_stats") or {}
     errors = result.get("errors") or []
