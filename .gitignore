@@ -7,6 +7,8 @@
 .env.local
 .env.*.local
 !.env.example
+# 生产环境密钥（部署用，服务器手动创建，切勿提交）
+.env.prod
 
 # ---------- 本地模型权重（约 4.6 GB）----------
 # core/knowledge_base.py、core/reranker.py

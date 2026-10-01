@@ -1,0 +1,38 @@
+# ============ 依赖 / 缓存 ============
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+*.log
+
+# ============ 本地模型权重（约 4.6GB，不打进镜像；运行时下载到挂载卷） ============
+models/
+backend/models/
+
+# ============ 前端 / 文档 / 测试（后端镜像不需要） ============
+frontend/
+tests/
+samples/
+docs/
+
+# ============ 密钥 / 环境变量（切勿打进镜像） ============
+.env
+.env.*
+!.env.prod.example
+
+# ============ IDE / 系统 ============
+.git/
+.gitignore
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# ============ 打包产物 ============
+*.tar.gz
+build/
+dist/

@@ -85,6 +85,43 @@ services:
       interval: 15s
       timeout: 10s
       retries: 10
+  # ── 后端应用（FastAPI + uvicorn，镜像不含模型权重，运行时自动下载到 /models）──
+  backend:
+    build: .
+    image: researchagent-backend:latest
+    container_name: research_agent_backend
+    restart: unless-stopped
+    env_file: .env.prod
+    environment:
+      # 国内下载加速：模型权重经 hf-mirror.com 拉取（可被 .env.prod 覆盖）
+      HF_ENDPOINT: ${HF_ENDPOINT:-https://hf-mirror.com}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      milvus:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/models          # 权重下载/读取落这里，重建容器不重下
+    working_dir: /app
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000
+
+  # ── 前端（nginx 托管 dist + 同源反代后端 /api，对外 8080）──
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-}   # 默认同源(空)经 nginx 反代
+    image: researchagent-frontend:latest
+    container_name: research_agent_frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_started
+    ports:
+      - "8080:80"        # 对外 http://<server-ip>:8080
+
   # ── Attu（Milvus 可视化管理界面，对外 30000）──
   attu:
     image: zilliz/attu:v2.4.12
