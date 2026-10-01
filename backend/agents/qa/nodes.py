@@ -502,7 +502,7 @@ async def generate_direct_node(state: dict, streamer=None) -> dict:
 
     :param state: 问答状态 dict，用 original_query/messages。
     :param streamer: 可选 SSE 流式回调（None 为一次性）。
-    :return: dict 部分更新，含 answer（附安全说明）/sources(空)/answer_mode("llm_direct")/confidence。
+    :return: dict 部分更新，含 answer/sources(空)/answer_mode("llm_direct")/confidence。
     """
     query = state["original_query"]
     system = _system_content(state)
@@ -511,10 +511,10 @@ async def generate_direct_node(state: dict, streamer=None) -> dict:
         system=system, history=history, query=query)
 
     answer = await _generate(streamer, 0.3, prompt)
-    final = (f"{answer}\n\n"
-             f"⚠️ **说明**：以上为 AI 基于通用知识的回答，研报语料中暂无足够相关内容，"
-             f"请以研报原文或复核为准。")
-    return {"answer": final, "sources": [], "answer_mode": "llm_direct",
+    # 说明/免责声明不在这里硬编码附加——「需不需要加、该不该加」由模型按提示里的
+    # 条件自行判断（见 DIRECT_ANSWER_PROMPT 规则 4/5）：具体事实未命中语料时补一句，
+    # 询问系统能力/语料内容的元问题不追加任何说明。
+    return {"answer": answer, "sources": [], "answer_mode": "llm_direct",
             "confidence": state.get("confidence", 0.0)}
 
 
