@@ -42,6 +42,15 @@ python-docx==1.1.2
 pdfplumber==0.11.4
 pymupdf==1.24.14
 
+# ===== LangChain 文档加载/切块（scripts/build_knowledge_base.py 依赖）=====
+# 后台导入 .md/.pdf 研报时,用 TextLoader/PyPDFLoader 加载、MarkdownHeaderTextSplitter
+# 等按标题/递归切块。build_report_pipeline 直接依赖这三件 + pypdf(供 PyPDFLoader)。
+# 统一锁在 0.3.x(Python 3.11 兼容、与 langchain-core 约束一致),不随 0.4/1.0 漂移。
+langchain-core==0.3.33
+langchain-text-splitters==0.3.4
+langchain-community==0.3.17
+pypdf==5.1.0
+
 # ===== 工具 =====
 httpx==0.28.1
 # 官方 openai SDK —— llm_factory 运输层：主要负责 Qwen（百炼）接口（结构化输出全走 qwen，实测支持 json_schema strict）；DeepSeek 仅端点登记、当前无 Agent 使用，需时再切换。与 httpx 0.28.1 兼容。
