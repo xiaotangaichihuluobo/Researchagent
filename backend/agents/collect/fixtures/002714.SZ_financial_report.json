@@ -1,0 +1,13 @@
+{
+  "company_code": "002714.SZ",
+  "source_type": "financial_report",
+  "note": "演示用样例数据，非真实原文。数值仅用于展示链路，不构成任何投资依据。",
+  "items": [
+    {
+      "title": "2026 年半年度报告",
+      "published_at": "2026-08-30T00:00:00+00:00",
+      "url": "https://example.com/fixture/002714/2026h1",
+      "content": "上半年实现营业收入 720 亿元，同比 +18%；归母净利润 82 亿元，出栏 4,080 万头，养殖成本持续下行。"
+    }
+  ]
+}

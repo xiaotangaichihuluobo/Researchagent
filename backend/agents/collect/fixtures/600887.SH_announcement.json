@@ -1,0 +1,31 @@
+{
+  "company_code": "600887.SH",
+  "source_type": "announcement",
+  "note": "演示用样例数据，非真实原文。数值仅用于展示链路，不构成任何投资依据。",
+  "items": [
+    {
+      "title": "关于回购注销部分股份的公告",
+      "published_at": "2026-07-18T00:00:00+00:00",
+      "url": "https://example.com/fixture/600887/ann-repo",
+      "content": "公司完成回购 5,600 万股并注销，支付金额约 16 亿元，进一步增厚每股收益，体现对长期价值的信心。"
+    },
+    {
+      "title": "2025 年度利润分配实施公告",
+      "published_at": "2026-06-05T00:00:00+00:00",
+      "url": "https://example.com/fixture/600887/ann-div",
+      "content": "2025 年度每 10 股派发现金红利 15 元（含税），合计派发约 100 亿元，分红率约 76%。"
+    },
+    {
+      "title": "海外产能布局公告",
+      "published_at": "2026-05-12T00:00:00+00:00",
+      "url": "https://example.com/fixture/600887/ann-plant",
+      "content": "公司在东南亚建设的乳制品生产基地正式投产，推动国际化业务从贸易走向本地化生产。"
+    },
+    {
+      "title": "婴配新国标产品上市公告",
+      "published_at": "2026-03-02T00:00:00+00:00",
+      "url": "https://example.com/fixture/600887/ann-new",
+      "content": "旗下金领冠系列新一代配方奶粉上市，主打母乳科学仿生配方，强化高端婴配竞争力。"
+    }
+  ]
+}

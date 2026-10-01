@@ -1,0 +1,13 @@
+{
+  "company_code": "002714.SZ",
+  "source_type": "announcement",
+  "note": "演示用样例数据，非真实原文。数值仅用于展示链路，不构成任何投资依据。",
+  "items": [
+    {
+      "title": "出栏量月度数据公告",
+      "published_at": "2026-08-03T00:00:00+00:00",
+      "url": "https://example.com/fixture/002714/ann-sales",
+      "content": "2026 年 7 月公司生猪出栏 687 万头，销售均价环比走高，养殖完全成本降至 13.2 元/公斤。"
+    }
+  ]
+}

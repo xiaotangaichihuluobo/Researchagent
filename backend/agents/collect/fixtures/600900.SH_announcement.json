@@ -1,0 +1,31 @@
+{
+  "company_code": "600900.SH",
+  "source_type": "announcement",
+  "note": "演示用样例数据，非真实原文。数值仅用于展示链路，不构成任何投资依据。",
+  "items": [
+    {
+      "title": "关于乌东德、白鹤滩水电站主体工程全面建成的公告",
+      "published_at": "2026-07-18T00:00:00+00:00",
+      "url": "https://example.com/fixture/600900/ann-up",
+      "content": "金沙江下游六座梯级电站全部建成投产，总装机容量达 9,500 万千瓦，梯级调度一体化效益有望持续释放。"
+    },
+    {
+      "title": "2025 年度利润分配实施公告",
+      "published_at": "2026-06-05T00:00:00+00:00",
+      "url": "https://example.com/fixture/600900/ann-div",
+      "content": "2025 年度每 10 股派发 8.5 元（含税），合计派发约 208 亿元，现金分红率约 62%，保持稳定回报股东。"
+    },
+    {
+      "title": "关于新能源资产收购的公告",
+      "published_at": "2026-03-30T00:00:00+00:00",
+      "url": "https://example.com/fixture/600900/ann-re",
+      "content": "公司拟收购集团旗下风光电资产合计约 2.2GW，交易作价约 105 亿元，扩展综合能源版图。"
+    },
+    {
+      "title": "长江流域来水情况公告",
+      "published_at": "2025-11-02T00:00:00+00:00",
+      "url": "https://example.com/fixture/600900/ann-water",
+      "content": "2025 年度长江中下游来水总体偏丰，为当年发电量增长提供有力支撑，梯级水库蓄水情况良好。"
+    }
+  ]
+}

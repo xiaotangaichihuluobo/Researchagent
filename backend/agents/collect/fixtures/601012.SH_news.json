@@ -1,0 +1,13 @@
+{
+  "company_code": "601012.SH",
+  "source_type": "news",
+  "note": "演示用样例数据，非真实原文。数值仅用于展示链路，不构成任何投资依据。",
+  "items": [
+    {
+      "title": "光伏供给侧出清，隆基 BC 技术优势凸显",
+      "published_at": "2026-08-12T00:00:00+00:00",
+      "url": "https://example.com/fixture/601012/news-1",
+      "content": "光伏产业链价格企稳，行业产能出清推进，隆基凭借领先的 BC 电池技术保持差异化竞争力。"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+# ===== 本地模型推理 =====
+transformers==4.51.0
+sentence-transformers==3.3.1
+sentencepiece==0.2.1
+torch==2.5.1
+FlagEmbedding>=1.2.0
+
+# ===== Web 框架 =====
+fastapi==0.117.1
+uvicorn[standard]==0.32.1
+python-multipart==0.0.20
+sse-starlette==2.1.3
+
+# ===== MCP Server（backend/mcp/ 下的知识库与联网搜索服务）=====
+# 必须停在 1.x，不能升到 2.x：mcp 2.0.0 起要求 pydantic>=2.12，而本项目
+# pin 的是 pydantic==2.11.4。装了 2.x 之后 pip 会把 pydantic 顶到 2.13 并把
+# starlette 顶到 1.x，fastapi 0.117.1 随即报
+# "Router.__init__() got an unexpected keyword argument 'on_startup'"，
+# 整个后端起不来。已验证 mcp==1.30.0 与现有 pin 组合无冲突（pip check 干净）。
+mcp==1.30.0
+
+# ===== 数据库驱动 =====
+asyncpg==0.30.0
+sqlalchemy[asyncio]==2.0.36
+# 去 LangGraph：暂停点改用 pipeline_checkpoints（轻量表，由 db/migrations.py 自动建），
+# 不再需要 langgraph-checkpoint-postgres / psycopg。
+pymilvus==2.4.9
+# pymilvus 2.4.x（含最后一个 2.4.15）仍在包内 import pkg_resources，
+# 而 setuptools 82.0.0 已移除该模块 —— 不降级会直接 ModuleNotFoundError。
+# 等升级到 pymilvus>=2.5（改用 importlib.metadata）后可删掉此行。
+setuptools<82
+
+# ===== 文档解析 =====
+python-docx==1.1.2
+pdfplumber==0.11.4
+pymupdf==1.24.14
+
+# ===== 工具 =====
+httpx==0.28.1
+# 官方 openai SDK —— llm_factory 运输层：主要负责 Qwen（百炼）接口（结构化输出全走 qwen，实测支持 json_schema strict）；DeepSeek 仅端点登记、当前无 Agent 使用，需时再切换。与 httpx 0.28.1 兼容。
+openai==2.54.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+python-dotenv==1.0.1
+tenacity==9.0.0
+numpy==1.26.4
+
+# ===== 数据验证 =====
+pydantic==2.11.4
+pydantic-settings==2.11.0
+
+# ===== 真实财报源（可选；mixed 模式下启用）=====
+# 财报走 baostock（BSD 许可、免费、免注册）。与 pydantic-settings 同 namespace。
+baostock==0.9.3
+
+# ===== 测试 =====
+pytest==8.3.4
+pytest-asyncio==0.24.0

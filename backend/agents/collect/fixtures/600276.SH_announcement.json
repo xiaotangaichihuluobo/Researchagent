@@ -1,0 +1,31 @@
+{
+  "company_code": "600276.SH",
+  "source_type": "announcement",
+  "note": "演示用样例数据，非真实原文。数值仅用于展示链路，不构成任何投资依据。",
+  "items": [
+    {
+      "title": "创新药获美国 FDA 突破性疗法认定",
+      "published_at": "2026-07-12T00:00:00+00:00",
+      "url": "https://example.com/fixture/600276/ann-fda",
+      "content": "公司自主研发的 ADC 药物获 FDA 突破性疗法资格认定，用于晚期小细胞肺癌治疗，海外临床推进提速。"
+    },
+    {
+      "title": "与海外药企达成授权合作协议",
+      "published_at": "2026-05-28T00:00:00+00:00",
+      "url": "https://example.com/fixture/600276/ann-license",
+      "content": "公司就一款双抗药物与全球药企签署独家授权协议，获得首付款 1.5 亿美元及里程碑付款与销售分成。"
+    },
+    {
+      "title": "创新药纳入国家医保目录的公告",
+      "published_at": "2025-11-08T00:00:00+00:00",
+      "url": "https://example.com/fixture/600276/ann-nrfd",
+      "content": "公司两款创新药成功纳入新版医保目录，有望通过以价换量加速放量，覆盖更多患者。"
+    },
+    {
+      "title": "员工持股计划实施进展",
+      "published_at": "2026-08-06T00:00:00+00:00",
+      "url": "https://example.com/fixture/600276/ann-esop",
+      "content": "公司推进新一轮股权激励，绑定研发与商业化核心团队，研发人员持股比例居行业前列。"
+    }
+  ]
+}

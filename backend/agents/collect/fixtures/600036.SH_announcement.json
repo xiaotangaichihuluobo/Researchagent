@@ -1,0 +1,37 @@
+{
+  "company_code": "600036.SH",
+  "source_type": "announcement",
+  "note": "演示用样例数据，非真实原文。数值仅用于展示链路，不构成任何投资依据。",
+  "items": [
+    {
+      "title": "关于高级管理人员变动的公告",
+      "published_at": "2026-07-10T00:00:00+00:00",
+      "url": "https://example.com/fixture/600036/ann-mgmt",
+      "content": "因工作调整，公司董事会决定聘任新一任首席风险官，原任转任风险管理委员会高级顾问，经营管理层保持稳定。"
+    },
+    {
+      "title": "关联交易公告：授信额度核定",
+      "published_at": "2026-06-02T00:00:00+00:00",
+      "url": "https://example.com/fixture/600036/ann-credit",
+      "content": "公司与关联方核定 2026 年度最高授信额度合计 180 亿元，用于日常经营周转，符合市场化定价原则。"
+    },
+    {
+      "title": "2025 年度利润分配实施公告",
+      "published_at": "2026-05-20T00:00:00+00:00",
+      "url": "https://example.com/fixture/600036/ann-div",
+      "content": "2025 年度每 10 股派发 23.4 元（含税），分红总额约 590 亿元，现金分红比例约 40%。"
+    },
+    {
+      "title": "关于中期票据注册额度的公告",
+      "published_at": "2026-03-12T00:00:00+00:00",
+      "url": "https://example.com/fixture/600036/ann-mtn",
+      "content": "公司获准注册不超过 800 亿元中期票据额度，用于补充中长期负债与优化资产负债结构。"
+    },
+    {
+      "title": "绿色金融信息披露公告",
+      "published_at": "2025-11-05T00:00:00+00:00",
+      "url": "https://example.com/fixture/600036/ann-esg",
+      "content": "公司发布绿色金融专项报告：绿色信贷余额突破 5,000 亿元，同比增长 18%，加大转型金融投放。"
+    }
+  ]
+}

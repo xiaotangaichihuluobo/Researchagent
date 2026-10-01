@@ -1,0 +1,13 @@
+{
+  "company_code": "002714.SZ",
+  "source_type": "industry",
+  "note": "演示用样例数据，非真实原文。数值仅用于展示链路，不构成任何投资依据。",
+  "items": [
+    {
+      "title": "生猪产能与价格周期",
+      "published_at": "2026-08-08T00:00:00+00:00",
+      "url": "https://example.com/fixture/002714/ind-1",
+      "content": "能繁母猪存栏小幅去化，猪价进入上行区间，养殖板块盈利修复。"
+    }
+  ]
+}

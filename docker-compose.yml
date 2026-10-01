@@ -1,0 +1,110 @@
+# docker-compose.yml — ResearchAgent 本地开发环境（精简版）
+# 启动：docker-compose --env-file .env.local up -d
+version: "3.9"
+
+services:
+
+  # ── PostgreSQL 主数据库（对外 5433，本机 5432 已占用）──
+  postgres:
+    image: postgres:15-alpine
+    container_name: research_agent_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-researchagent}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGTZ: Asia/Shanghai
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # 容器首次启动时自动执行建表脚本（见 3.2 节）
+      - ./scripts/init_db.sql:/docker-entrypoint-initdb.d/01_init_db.sql:ro
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME:-researchagent}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── etcd（Milvus 元数据存储，仅内部使用，不对外暴露端口）──
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.14
+    container_name: research_agent_etcd
+    restart: unless-stopped
+    environment:
+      ETCD_AUTO_COMPACTION_MODE: revision
+      ETCD_AUTO_COMPACTION_RETENTION: "1000"
+      ETCD_QUOTA_BACKEND_BYTES: "4294967296"
+    command: >
+      etcd
+      --advertise-client-urls=http://127.0.0.1:2379
+      --listen-client-urls=http://0.0.0.0:2379
+      --data-dir=/etcd
+    volumes:
+      - etcd_data:/etcd
+
+  # ── MinIO（Milvus 向量文件存储，仅内部使用，不对外暴露端口）──
+  minio:
+    image: minio/minio:latest
+    container_name: research_agent_minio
+    restart: unless-stopped
+    command: server /data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-minioadmin}
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # ── Milvus 向量数据库（对外 19531，本机 19530 已占用）──
+  milvus:
+    image: milvusdb/milvus:v2.4.0
+    container_name: research_agent_milvus
+    restart: unless-stopped
+    command: ["milvus", "run", "standalone"]
+    environment:
+      ETCD_ENDPOINTS: etcd:2379                 # 连内部 etcd
+      MINIO_ADDRESS: minio:9000                 # 连内部 MinIO
+      MINIO_ACCESS_KEY_ID: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_ACCESS_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+    volumes:
+      - milvus_data:/var/lib/milvus
+    ports:
+      - "19531:19530"
+    depends_on:
+      etcd:
+        condition: service_started
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+  # ── Attu（Milvus 可视化管理界面，对外 30000）──
+  attu:
+    image: zilliz/attu:v2.4.12
+    container_name: research_agent_attu
+    restart: unless-stopped
+    environment:
+      # Attu 在 Docker 内部访问 Milvus，必须使用服务名 milvus:19530，不能写 localhost:19531
+      MILVUS_URL: milvus:19530
+      SERVER_PORT: "3000"
+      TZ: Asia/Shanghai
+    ports:
+      # 不写 127.0.0.1，默认绑定 0.0.0.0，外部可通过 http://192.168.88.100:30000 访问
+      - "30000:3000"
+    depends_on:
+      milvus:
+        condition: service_healthy
+
+# ── 数据卷（持久化，重启容器数据不丢失）──
+volumes:
+  postgres_data:
+  etcd_data:
+  minio_data:
+  milvus_data:

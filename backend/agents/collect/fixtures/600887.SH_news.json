@@ -1,0 +1,31 @@
+{
+  "company_code": "600887.SH",
+  "source_type": "news",
+  "note": "演示用样例数据，非真实原文。数值仅用于展示链路，不构成任何投资依据。",
+  "items": [
+    {
+      "title": "乳品需求回暖，伊利常温奶份额持续回升",
+      "published_at": "2026-08-14T00:00:00+00:00",
+      "url": "https://example.com/fixture/600887/news-1",
+      "content": "国内乳制品消费温和复苏，伊利稳居行业龙头，常温酸奶与白奶推新带动份额回升。"
+    },
+    {
+      "title": "功能性乳品与健康升级成新增长点",
+      "published_at": "2026-06-10T00:00:00+00:00",
+      "url": "https://example.com/fixture/600887/news-2",
+      "content": "伊利加码功能性乳品、奶酪与健康营养品，产品结构升级有望带动利润率提升。"
+    },
+    {
+      "title": "原奶价格企稳，乳企成本端压力缓释",
+      "published_at": "2026-04-22T00:00:00+00:00",
+      "url": "https://example.com/fixture/600887/news-3",
+      "content": "原奶收购价企稳回升，行业促销竞争趋缓，龙头乳企费用率改善、盈利弹性显现。"
+    },
+    {
+      "title": "高端化与国际化双轮驱动伊利增长",
+      "published_at": "2026-03-15T00:00:00+00:00",
+      "url": "https://example.com/fixture/600887/news-4",
+      "content": "伊利持续推进产品高端化与海外产能布局，全球乳业五强排名稳固。"
+    }
+  ]
+}

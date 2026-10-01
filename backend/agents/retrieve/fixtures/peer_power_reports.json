@@ -1,0 +1,24 @@
+{
+  "note": "演示用样例研报数据，可比公司引用非真实原文。观点为虚构，不构成任何投资依据。",
+  "industry": "电力",
+  "items": [
+    {
+      "title": "华能水电 2025 年报点评",
+      "report_type": "broker",
+      "published_at": "2026-04-10",
+      "company_code": "600025.SH",
+      "industry": "电力",
+      "rating": "增持",
+      "content": "华能水电 2025 年发电量同比提升，来水偏丰、电价与外送结构稳定，分红率保持高位，现金流稳健。"
+    },
+    {
+      "title": "国投电力 2025 年报点评",
+      "report_type": "broker",
+      "published_at": "2026-04-13",
+      "company_code": "600886.SH",
+      "industry": "电力",
+      "rating": "增持",
+      "content": "国投电力水电与火电并举，水火互济平滑经营波动，新能源加速布局，盈利稳中有升。"
+    }
+  ]
+}

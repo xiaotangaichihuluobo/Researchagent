@@ -1,0 +1,24 @@
+{
+  "note": "演示用样例研报数据，可比公司引用非真实原文。观点为虚构，不构成任何投资依据。",
+  "industry": "化学制药",
+  "items": [
+    {
+      "title": "百济神州 2025 年报点评",
+      "report_type": "broker",
+      "published_at": "2026-04-08",
+      "company_code": "688235.SH",
+      "industry": "化学制药",
+      "rating": "买入",
+      "content": "百济神州全球收入高增，替雷利珠单抗海外放量，泽布替尼全球销售创新高，管线储备丰富，Biotech 出海标杆。"
+    },
+    {
+      "title": "复星医药 2025 年报点评",
+      "report_type": "broker",
+      "published_at": "2026-04-10",
+      "company_code": "600196.SH",
+      "industry": "化学制药",
+      "rating": "增持",
+      "content": "复星医药创新药收入占比提升，海外授权合作活跃，制药与器械双轮驱动，估值具备安全边际。"
+    }
+  ]
+}

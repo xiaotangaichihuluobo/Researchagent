@@ -1,0 +1,38 @@
+[
+  {
+    "question": "贵州茅台 2025 年营业收入情况如何",
+    "tenant": "tenant_default",
+    "expected_companies": ["600519.SH"],
+    "note": "单公司精确命中"
+  },
+  {
+    "question": "贵州茅台 2025 年营收同比增长多少",
+    "tenant": "tenant_default",
+    "expected_companies": ["600519.SH"],
+    "note": "单公司精确命中(财务指标)"
+  },
+  {
+    "question": "茅台最近几年毛利率变化怎么样",
+    "tenant": "tenant_default",
+    "expected_companies": ["600519.SH"],
+    "note": "近义改写仍命中"
+  },
+  {
+    "question": "贵州茅台的估值水平如何",
+    "tenant": "tenant_default",
+    "expected_companies": ["600519.SH"],
+    "note": "估值角度命中"
+  },
+  {
+    "question": "那五粮液 2025 年营收呢",
+    "tenant": "tenant_default",
+    "expected_companies": ["000858.SZ"],
+    "note": "跟随式指代;实测语料含五粮液(评估跑通了才知道,原负样本假设是错的)"
+  },
+  {
+    "question": "白酒行业 2025 年整体展望",
+    "tenant": "tenant_default",
+    "expected_companies": ["600519.SH"],
+    "note": "泛问,BROAD;若语料含行业段则命中茅台"
+  }
+]

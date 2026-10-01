@@ -1,0 +1,25 @@
+{
+  "company_code": "600276.SH",
+  "source_type": "industry",
+  "note": "演示用样例数据，非真实原文。数值仅用于展示链路，不构成任何投资依据。",
+  "items": [
+    {
+      "title": "创新药行业从仿制到 FIC 转型",
+      "published_at": "2026-08-10T00:00:00+00:00",
+      "url": "https://example.com/fixture/600276/ind-1",
+      "content": "我国创新药研发进入 From-Follower-to-First 阶段，BCI 指标快速回升，行业研发效率与全球竞争力提升。"
+    },
+    {
+      "title": "医保控费与创新药支付优化",
+      "published_at": "2026-06-05T00:00:00+00:00",
+      "url": "https://example.com/fixture/600276/ind-2",
+      "content": "创新药谈判续约规则优化，支付标准总体趋于合理，创新药放量确定性增强，行业进入高质量发展期。"
+    },
+    {
+      "title": "生物医药融资与 IPO 环境",
+      "published_at": "2026-04-08T00:00:00+00:00",
+      "url": "https://example.com/fixture/600276/ind-3",
+      "content": "生物医药一级市场融资回暖，创新药企上市路径多元化，行业整体风险偏好回升。"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "company_code": "601012.SH",
+  "source_type": "financial_report",
+  "note": "演示用样例数据，非真实原文。数值仅用于展示链路，不构成任何投资依据。",
+  "items": [
+    {
+      "title": "2026 年半年度报告",
+      "published_at": "2026-08-29T00:00:00+00:00",
+      "url": "https://example.com/fixture/601012/2026h1",
+      "content": "上半年实现营业收入 388 亿元，同比增长转正；归母净利润 8.6 亿元，实现扭亏为盈，硅片出货量回升。"
+    }
+  ]
+}

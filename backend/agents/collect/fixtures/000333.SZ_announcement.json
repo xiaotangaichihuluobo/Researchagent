@@ -1,0 +1,37 @@
+{
+  "company_code": "000333.SZ",
+  "source_type": "announcement",
+  "note": "演示用样例数据，非真实原文。数值仅用于展示链路，不构成任何投资依据。",
+  "items": [
+    {
+      "title": "关于回购公司股份实施结果的公告",
+      "published_at": "2026-07-22T00:00:00+00:00",
+      "url": "https://example.com/fixture/000333/ann-repo",
+      "content": "公司累计回购股份 8,600 万股，支付总金额约 28 亿元，用于注销以减少注册资本，提升股东回报。"
+    },
+    {
+      "title": "分拆美智光电赴港上市的公告",
+      "published_at": "2026-05-30T00:00:00+00:00",
+      "url": "https://example.com/fixture/000333/ann-split",
+      "content": "公司拟分拆智慧照明业务子公司美智光电至香港联交所主板上市，聚焦产业资本协同，释放业务价值。"
+    },
+    {
+      "title": "2025 年度利润分配方案公告",
+      "published_at": "2026-04-15T00:00:00+00:00",
+      "url": "https://example.com/fixture/000333/ann-div",
+      "content": "2025 年度拟每 10 股派发现金红利 30 元（含税），合计派发约 233 亿元，分红率约 60%。"
+    },
+    {
+      "title": "库卡机器人增资扩产公告",
+      "published_at": "2026-02-18T00:00:00+00:00",
+      "url": "https://example.com/fixture/000333/ann-kuka",
+      "content": "公司对德国库卡追加资本投入，于合肥建设全球领先的工业机器人研发制造基地，扩大海外产能协同。"
+    },
+    {
+      "title": "员工持股计划实施公告",
+      "published_at": "2025-11-20T00:00:00+00:00",
+      "url": "https://example.com/fixture/000333/ann-esop",
+      "content": "新一轮员工持股计划完成股票受让，覆盖核心管理与技术人员，绑定长期利益。"
+    }
+  ]
+}

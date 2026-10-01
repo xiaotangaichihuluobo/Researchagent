@@ -1,0 +1,37 @@
+{
+  "company_code": "000858.SZ",
+  "source_type": "announcement",
+  "note": "演示用样例数据，非真实原文。数值仅用于展示链路，不构成任何投资依据。",
+  "items": [
+    {
+      "title": "关于 2026 年半年度利润分配方案的公告",
+      "published_at": "2026-08-12T00:00:00+00:00",
+      "url": "https://example.com/fixture/000858/ann-div",
+      "content": "公司拟每 10 股派发现金红利 26.0 元（含税），合计派发约 100.9 亿元，占当期归母净利润的 53.9%。"
+    },
+    {
+      "title": "关于回购股份用于员工持股计划的公告",
+      "published_at": "2026-06-18T00:00:00+00:00",
+      "url": "https://example.com/fixture/000858/ann-repo",
+      "content": "拟以不超过 160 元/股回购公司股份，总金额不超 20 亿元，回购股份用于员工持股计划，彰显管理层信心。"
+    },
+    {
+      "title": "产品提价公告",
+      "published_at": "2026-05-08T00:00:00+00:00",
+      "url": "https://example.com/fixture/000858/ann-price",
+      "content": "自 2026 年 6 月 1 日起，对八代五粮液出厂价上调 8%，进一步强化品牌价值与渠道利润结构。"
+    },
+    {
+      "title": "股权激励解锁公告",
+      "published_at": "2025-11-12T00:00:00+00:00",
+      "url": "https://example.com/fixture/000858/ann-esop",
+      "content": "2025 年限制性股票激励计划第一批解锁条件已满足，可解锁比例 40%，共约 2450 万股。"
+    },
+    {
+      "title": "2025 年中期分红实施公告",
+      "published_at": "2025-08-15T00:00:00+00:00",
+      "url": "https://example.com/fixture/000858/ann-2025h1",
+      "content": "公司实施每 10 股派发 24.0 元（含税）的中期分红，低成本回报股东。"
+    }
+  ]
+}

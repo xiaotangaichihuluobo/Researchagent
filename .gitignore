@@ -1,0 +1,83 @@
+# ============================================================
+# ResearchAgent .gitignore
+# ============================================================
+
+# ---------- 环境变量与密钥（勿提交）----------
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ---------- 本地模型权重（约 4.6 GB）----------
+# core/knowledge_base.py、core/reranker.py
+# 通过 .env.local 中的 BGE_M3_MODEL_PATH / RERANKER_MODEL_PATH 指向此目录
+models/
+backend/models/
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ---------- 虚拟环境 ----------
+.venv/
+venv/
+env/
+ENV/
+
+# ---------- 测试 / 类型检查 / lint 缓存 ----------
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ---------- 前端 ----------
+node_modules/
+frontend/dist/
+frontend/.vite/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---------- 数据库文件与日志 ----------
+*.db
+*.sqlite
+*.sqlite3
+*.log
+logs/
+
+# ---------- IDE ----------
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+
+# ---------- 操作系统 ----------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------- Jupyter ----------
+.ipynb_checkpoints/
+
+# ---------- 运行时产物 ----------
+uploads/
+tmp/
+
+# 文档与历史残留不上传(本地保留)
+docs/
+review/
+understant_sse/
+
+tests/
+
+# 个人数据残留（简历等敏感文本，勿提交）
+frontend/_docx_text.txt

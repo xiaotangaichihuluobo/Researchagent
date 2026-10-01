@@ -1,0 +1,13 @@
+{
+  "company_code": "601899.SH",
+  "source_type": "industry",
+  "note": "演示用样例数据，非真实原文。数值仅用于展示链路，不构成任何投资依据。",
+  "items": [
+    {
+      "title": "有色金属价格展望",
+      "published_at": "2026-08-05T00:00:00+00:00",
+      "url": "https://example.com/fixture/601899/ind-1",
+      "content": "避险需求支撑金价，铜市供需偏紧，有色金属板块景气度整体上行。"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "note": "演示用样例研报数据，可比公司引用非真实原文。观点为虚构，不构成任何投资依据。",
+  "industry": "银行",
+  "items": [
+    {
+      "title": "宁波银行 2025 年报点评",
+      "report_type": "broker",
+      "published_at": "2026-04-09",
+      "company_code": "002142.SZ",
+      "industry": "银行",
+      "rating": "买入",
+      "content": "宁波银行 2025 年归母净利润同增约 13%，净息差 2.35% 处于上市行高位，零售与对公均衡分层经营，资产质量保持同业最优梯队。"
+    },
+    {
+      "title": "兴业银行 2025 年报点评",
+      "report_type": "broker",
+      "published_at": "2026-04-11",
+      "company_code": "601166.SH",
+      "industry": "银行",
+      "rating": "增持",
+      "content": "兴业银行 2025 年营收转正，净利息收入企稳，绿色金融与同业生态布局领先，ROE 行业居前。"
+    },
+    {
+      "title": "江苏银行 2025 年报点评",
+      "report_type": "broker",
+      "published_at": "2026-04-12",
+      "company_code": "600919.SH",
+      "industry": "银行",
+      "rating": "买入",
+      "content": "江苏银行 2025 年利润增速双位数，零售转型成效显现，资产质量持续改善，高成长性延续。"
+    }
+  ]
+}

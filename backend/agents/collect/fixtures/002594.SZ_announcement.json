@@ -1,0 +1,31 @@
+{
+  "company_code": "002594.SZ",
+  "source_type": "announcement",
+  "note": "演示用样例数据，非真实原文。数值仅用于展示链路，不构成任何投资依据。",
+  "items": [
+    {
+      "title": "月度产销快报公告",
+      "published_at": "2026-08-02T00:00:00+00:00",
+      "url": "https://example.com/fixture/002594/ann-sales",
+      "content": "2026 年 7 月公司新能源汽车销量 38.9 万辆，同比增长 25.3%，其中海外销售 7.6 万辆，创新月度纪录。"
+    },
+    {
+      "title": "关于建设海外生产基地的公告",
+      "published_at": "2026-06-22T00:00:00+00:00",
+      "url": "https://example.com/fixture/002594/ann-plant",
+      "content": "公司拟在东南亚建设新能源汽车整车与电池生产基地，设计产能 15 万辆/年，加速本地化生产以满足海外需求。"
+    },
+    {
+      "title": "刀片电池外供合作进展公告",
+      "published_at": "2026-04-10T00:00:00+00:00",
+      "url": "https://example.com/fixture/002594/ann-battery",
+      "content": "公司刀片电池向多家主流车企外供，外部配套装机量同比大幅增长，电池业务从内部降本走向外部增收。"
+    },
+    {
+      "title": "高端车型上市公告",
+      "published_at": "2026-03-05T00:00:00+00:00",
+      "url": "https://example.com/fixture/002594/ann-hi",
+      "content": "公司旗舰轿车正式上市，搭载最新智驾系统与第五代 DM 技术，强化高端市场份额。"
+    }
+  ]
+}
