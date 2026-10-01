@@ -31,6 +31,11 @@ pymilvus==2.4.9
 # 而 setuptools 82.0.0 已移除该模块 —— 不降级会直接 ModuleNotFoundError。
 # 等升级到 pymilvus>=2.5（改用 importlib.metadata）后可删掉此行。
 setuptools<82
+# pymilvus → environs → ma.__version_info__（environs/__init__.py:58）。marshmallow 4.x
+# 删掉了 __version_info__，pip 把它决议到 4.x 时，retrieve/QA 一 import pymilvus 就抛
+# "module 'marshmallow' has no attribute '__version_info__'" 并降级成"无参考研报"。
+# 钉在 3.x（>3.13 满足 environs 的版本检查）。仓库代码不直接用 marshmallow，降级无副作用。
+marshmallow>=3.13,<4
 
 # ===== 文档解析 =====
 python-docx==1.1.2
