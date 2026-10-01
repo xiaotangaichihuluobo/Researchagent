@@ -68,11 +68,16 @@ async def fetch_all_sources_node(state: CollectState) -> dict:
     # 真走 MCP 协议调采集 MCP（/mcp/data-source 的 fetch_all_sources）。
     # 与 QA 检索、联网搜索一致：不在此静默切回 adapters 直连函数 —— MCP 失败即抛，
     # 由统错误处理落回「四源全败」归因，而不是绕过 MCP 假装取数成功。
+    # timeout=180：四源并发里最慢的是 baostock 财报（登录 + 拉 6 份年报，在无 GPU 的
+    # 云服务器上实测要 ~57s）。call_mcp_tool 默认 30s 会在此超时 —— 表现为 runner 在
+    # 任务开始后恰 +30s 报 pipeline_failed 且 error=''（超时的 str() 为空），而 baostock
+    # 稍后仍采完（fetch_done 晚到 27s）。放宽到 180s，给慢源留足余量，别把正常慢当失败。
     result = await call_mcp_tool(
         get_settings().data_source_mcp_server_url,
         "fetch_all_sources",
         {"company_code": company["code"], "company_name": company["name"],
          "industry": company["industry"]},
+        timeout=180.0,
     ) or {}
 
     # call_mcp_tool 对【返回单个 dict】的工具会把结果包成 [dict]：它的归一假设是工具
