@@ -9,6 +9,8 @@ import asyncio
 import json
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+
+from backend.core.timeutil import cn_now
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any, Optional
@@ -215,7 +217,7 @@ def normalize_and_score(items: list[RawDataItem],
         published_at/timeliness_weight/reliability/raw）；按源限量并截断正文。
     """
     if now is None:
-        now = datetime.now(timezone.utc)
+        now = cn_now()
 
     # 按来源分桶后再限每条量：不能全局限量，否则条数多的源会把其它源挤没。
     by_source: dict[str, list[RawDataItem]] = {}

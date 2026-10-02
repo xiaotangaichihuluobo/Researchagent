@@ -10,6 +10,8 @@
 
 import asyncio
 from datetime import datetime, timezone
+
+from backend.core.timeutil import cn_now
 from typing import Optional
 
 from backend.config import get_settings
@@ -122,7 +124,7 @@ async def ingest_report_chunks(*, tenant_id: str, report_key: str, title: str,
         return 0
 
     ids = chunk_ids(report_key, len(chunks))
-    stamp = int((published_at or datetime.now(timezone.utc)).timestamp())
+    stamp = int((published_at or cn_now()).timestamp())
     rows = [
         {"id": ids[i], "content": chunks[i], "tenant_id": tenant_id,
          "company_code": company_code, "industry": industry or "",

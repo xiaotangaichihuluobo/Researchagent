@@ -6,6 +6,8 @@
 # 只改一处。把它们散进各 Agent 节点里，就再也没法验证「系数改了会怎样」。
 
 from datetime import datetime, timezone
+
+from backend.core.timeutil import CN_TZ, cn_now
 from typing import Optional
 
 from backend.config import get_settings
@@ -65,7 +67,7 @@ def compute_timeliness_weight(
     """
     settings = get_settings()
     if now is None:
-        now = datetime.now(timezone.utc)
+        now = cn_now()
 
     # 没有发布时间 = 无法证明它新 → 直接给下限，走「证据偏旧」路径
     if published_at is None:
@@ -200,7 +202,7 @@ if __name__ == '__main__':
     # 手工核对分档：python -m backend.core.research_rules
     from datetime import timedelta
 
-    base = datetime(2026, 9, 17, tzinfo=timezone.utc)
+    base = datetime(2026, 9, 17, tzinfo=CN_TZ)
     for d in (0, 30, 31, 100, 200, 300, 400, 3650):
         w = compute_timeliness_weight(base - timedelta(days=d), now=base)
         print(f"{d:>5} 天前 → timeliness_weight={w}")

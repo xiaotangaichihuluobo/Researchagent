@@ -5,6 +5,8 @@
 
 from datetime import datetime
 
+from backend.core.timeutil import cn_now
+
 # ── 系统提示：静态 / 动态分界（对齐 s10「运行时组装、静态段缓存」）──
 # 这条 SYSTEM 每轮都进 prompt，是这段问答引擎里唯一「反复发送」的常驻文本，
 # 故按 s10 的「静态 / 动态」画出分界，留给未来接 API prompt cache 的接缝：
@@ -34,7 +36,7 @@ def current_datetime_str() -> str:
     :return: str，形如 "2026年09月27日 星期一 14:30"。
     """
     weekdays = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
-    now = datetime.now()
+    now = cn_now()
     return now.strftime(f"%Y年%m月%d日 {weekdays[now.weekday()]} %H:%M")
 
 

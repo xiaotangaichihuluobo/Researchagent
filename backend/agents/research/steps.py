@@ -256,7 +256,7 @@ async def publish_report_final(state: dict) -> dict:
     # 否掉一个已生效的对外产物。失败只记录。宿主是既有 RAG 基建 report_ingest。
     corpus_ingested, corpus_reason = False, ""
     try:
-        from datetime import datetime, timezone
+        from backend.core.timeutil import cn_now
 
         from backend.core.report_ingest import ingest_report
 
@@ -267,7 +267,7 @@ async def publish_report_final(state: dict) -> dict:
             company_code=state.get("company_code") or "",
             industry=state.get("industry") or "",
             report_type="internal",
-            published_at=datetime.now(timezone.utc),
+            published_at=cn_now(),
             company_id=str(report["company_id"]),
         )
         corpus_ingested, corpus_reason = True, f"已回灌 {chunks} 个切片"

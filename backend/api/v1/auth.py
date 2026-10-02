@@ -1,6 +1,8 @@
 import asyncio
 from datetime import datetime, timedelta, timezone
 
+from backend.core.timeutil import cn_now
+
 import uvicorn
 from fastapi import APIRouter, HTTPException, status, Depends
 from pydantic import BaseModel, Field
@@ -44,7 +46,7 @@ def _create_access_token(data: dict, expires_minutes: int) -> str:
     """把身份信息 + 过期时间打包，用密钥签名成 JWT 字符串。"""
     settings = get_settings()
     payload = data.copy()                                            # 拷一份，避免改到原字典
-    expire = datetime.now(timezone.utc) + timedelta(minutes=expires_minutes)
+    expire = cn_now() + timedelta(minutes=expires_minutes)
     payload["exp"] = expire                                          # exp 是 JWT 标准的过期字段
     return jwt.encode(payload, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
 

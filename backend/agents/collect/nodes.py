@@ -8,6 +8,8 @@
 
 from datetime import datetime, timezone
 
+from backend.core.timeutil import cn_now
+
 from backend.agents.collect.adapters import (
     CollectExhaustedError, RawDataItem, normalize_and_score,
 )
@@ -104,7 +106,7 @@ async def fetch_all_sources_node(state: CollectState) -> dict:
 async def normalize_and_score_node(state: CollectState) -> dict:
     """格式化：算时效权重与可信度、截断正文、按源限量。"""
     rows = normalize_and_score(state.get("raw_items") or [],
-                               now=datetime.now(timezone.utc))
+                               now=cn_now())
     logger.info("collect.normalized", task_id=state["task_id"], count=len(rows))
     return {"raw_items": rows}
 

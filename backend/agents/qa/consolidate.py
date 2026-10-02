@@ -19,6 +19,8 @@ import hashlib
 import re
 from datetime import datetime, timezone
 
+from backend.core.timeutil import cn_now
+
 from backend.core import qa_repo
 from backend.core.logger import get_logger
 
@@ -116,7 +118,7 @@ async def _ingest_faqs_to_corpus(tenant_id: str, faqs: list[dict]) -> int:
                 company_code="faq",
                 industry="",
                 report_type="faq",
-                published_at=datetime.now(timezone.utc),
+                published_at=cn_now(),
             )
             written += 1
         except Exception as e:

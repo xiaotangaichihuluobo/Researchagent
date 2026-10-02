@@ -8,6 +8,8 @@
 import json
 import uuid
 from datetime import datetime, timezone
+
+from backend.core.timeutil import cn_now
 from typing import Any, Optional
 
 from sqlalchemy import text
@@ -973,7 +975,7 @@ async def upsert_checkpoint(tenant_id: str, task_id: str, stage: str, step: str,
     :param payload: 续跑载荷（如签字决策注入），可空
     :return: 无返回值
     """
-    now = datetime.now(timezone.utc)
+    now = cn_now()
     async with AsyncSessionLocal() as session:
         await session.execute(
             text("""
