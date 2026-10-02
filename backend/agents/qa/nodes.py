@@ -325,10 +325,14 @@ async def _search_kb(query: str, tenant_id: str, recall: int, rerank: int) -> li
     :return: list[dict]，规整成 {content, score, metadata} 的研报切片列表。
     """
     settings = get_settings()
+    # timeout=120：BROAD 多路并发时每个 rerank batch 在低端机上实测要 70s+，
+    # 走默认 30s 会踩 httpx.ReadTimeout（str() 为空，记成 error='' 像是假失败）。
+    # 与采集段 fetch_all_sources 放宽到 180s 同一条理由：别把慢当失败。
     flat = await call_mcp_tool(
         settings.kb_mcp_server_url, "search_knowledge_base",
         {"query": query, "tenant_id": tenant_id,
-         "recall_top_k": recall, "rerank_top_k": rerank})
+         "recall_top_k": recall, "rerank_top_k": rerank},
+        timeout=120.0)
     docs = []
     for d in (flat or []):
         docs.append({
