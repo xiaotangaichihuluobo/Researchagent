@@ -364,8 +364,15 @@ async def retrieve_node(state: dict) -> dict:
 
     if qtype == "BROAD" and state.get("rewritten_queries"):
         subs = state["rewritten_queries"][:MAX_BROAD_QUERIES]
-        result_lists = await asyncio.gather(
-            *[_one(q, RECALL_TOP_K_BROAD_PER, RERANK_TOP_K) for q in subs])
+        # 串行执行而不是 asyncio.gather 并发：BROAD 每路子 query 都要对
+        # BGE-Reranker-large 做一次 CPU 精排（本地模型），在低核数机器（如 2 核 4G）
+        # 上并发三路推理反而互抢 CPU/内存、把每路拖到远超超时阈值（实测 70s+），
+        # 表现为「BROAD 必超时」。串行后每路独占算力，单路时有足够余量进超时。
+        # 代价是总的多次检索变顺序耗时，但对本地慢模型，正确性/可用性优先于吞吐。
+        result_lists = []
+        for _q in subs:
+            result_lists.append(
+                await _one(_q, RECALL_TOP_K_BROAD_PER, RERANK_TOP_K))
         seen: dict[str, tuple[dict, float]] = {}
         for docs in result_lists:
             for doc in docs:

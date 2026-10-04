@@ -14,7 +14,7 @@ async def call_mcp_tool(
     server_url: str,
     tool_name: str,
     arguments: dict[str, Any],
-    timeout: float = 30.0,
+    timeout: float = 120.0,
 ) -> Any:
     """
     调用 stateless MCP Server 的单个工具。
