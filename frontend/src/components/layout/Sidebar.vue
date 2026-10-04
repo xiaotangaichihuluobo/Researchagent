@@ -25,6 +25,17 @@
         <el-icon><Stamp /></el-icon>
         <span>风控审核</span>
       </RouterLink>
+      <!-- 任务监控只对管理员显示（研究员 / 风控都看不到）。它暴露失败任务的
+           完整 traceback（排障栈），属内部运维能力 —— 界面不可见即职责分离。 -->
+      <RouterLink
+        v-if="auth.isAdmin"
+        to="/monitor"
+        class="nav-item"
+        :class="{ 'nav-item--active': isActive('/monitor') }"
+      >
+        <el-icon><Monitor /></el-icon>
+        <span>任务监控</span>
+      </RouterLink>
     </nav>
   </div>
 </template>
@@ -32,7 +43,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { DataAnalysis, Stamp, ChatDotRound } from '@element-plus/icons-vue'
+import { DataAnalysis, Stamp, ChatDotRound, Monitor } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()

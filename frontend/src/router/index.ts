@@ -38,6 +38,14 @@ const router = createRouter({
           meta: { requiresRole: ['risk_control', 'admin'] },
         },
         {
+          path: 'monitor',
+          name: 'task-monitor',
+          component: () => import('@/views/TaskMonitorView.vue'),
+          // 任务监控只有管理员能进：这里展示的是失败任务的完整 traceback，
+          // 相当于把「内部排障栈」暴露给了界面 —— 研究员用不上，风险上也不该让。
+          meta: { requiresRole: ['admin'] },
+        },
+        {
           path: 'tasks/:taskId/report',
           name: 'report',
           component: () => import('@/views/ReportView.vue'),

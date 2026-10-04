@@ -10,10 +10,18 @@ export interface Company {
   industry: string
 }
 
+// 失败阶段 detail 里由 runner.py 写入的结构（{"error","trace"}）。
+// detail.trace 是截断过的完整 traceback，供管理员排障；started/success 阶段无此结构。
+export interface StageFailureDetail {
+  error?: string
+  trace?: string
+  stage?: string
+}
+
 export interface StageEvent {
   stage: string
   status: 'started' | 'success' | 'failed' | 'skipped'
-  detail: Record<string, unknown>
+  detail: Record<string, unknown> & { error?: string; trace?: string }
   occurred_at: string
 }
 
@@ -34,6 +42,7 @@ export interface TaskSummary {
   company_name: string
   status: TaskDetail['status']
   current_stage: string
+  last_error: string | null
   created_at: string
 }
 
