@@ -77,7 +77,8 @@ async def search_knowledge_base(
             for doc in docs
         ]
     except Exception as e:
-        logger.error("kb_mcp.search_failed", error=str(e))
+        # exc_info=True：meta 这类运行期错误只看 message 定位不了，把完整栈打出来
+        logger.error("kb_mcp.search_failed", error=str(e), exc_info=True)
         return []
 
 

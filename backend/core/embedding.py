@@ -85,6 +85,14 @@ class BGEMEmbedder:
         def _dtype_shim(model_name_or_path, *args, **kwargs):
             """把裸 dtype 翻译成 AutoModel 认的 torch_dtype 的垫片。
 
+            顺带强制 low_cpu_mem_usage=False：
+            FlagEmbedding 的 EncoderOnlyEmbedderRunner.get_model 调 AutoModel.
+            from_pretrained 时不传 low_cpu_mem_usage，transformers 在低内存
+            （本进程同模型堆 BGE-M3 2.2G 后再加载）且带了 torch_dtype 时，会走
+            accelerate 的 meta 分片加载 —— 权重留在 meta 占位，编码时
+            self.model.to(device) 就抛 “Cannot copy out of meta tensor”。
+            这里把开关钉成 False，堵死 meta 路径。
+
             :param model_name_or_path: 传给 from_pretrained 的模型名称或路径
             :param args: 透传给 from_pretrained 的位置参数
             :param kwargs: 透传的关键字参数；含裸 dtype 时转成 torch_dtype
@@ -92,6 +100,8 @@ class BGEMEmbedder:
             """
             if "dtype" in kwargs and "torch_dtype" not in kwargs:
                 kwargs["torch_dtype"] = kwargs.pop("dtype")
+            # 钉死 False：不信任 transformers 在低内存下的默认自动加速分片判断
+            kwargs["low_cpu_mem_usage"] = False
             return _orig_from_pretrained(model_name_or_path, *args, **kwargs)
 
         transformers.AutoModel.from_pretrained = _dtype_shim
@@ -103,6 +113,11 @@ class BGEMEmbedder:
             )
         finally:
             transformers.AutoModel.from_pretrained = _orig_from_pretrained
+        # 防御：加载完扫一遍，确认没有残留 meta 张量（真实权重若停在 meta，
+        # encode 时 .to(device) 必炸；低内存下 accelerate 会偷偷把它落下）。
+        _meta = [n for n, p in self._model.model.named_parameters() if p.is_meta]
+        if _meta:
+            logger.error("bge_m3.meta_params_present", count=len(_meta), sample=_meta[:3])
         logger.info("bge_m3.loaded", use_fp16=_use_fp16)
 
     @classmethod

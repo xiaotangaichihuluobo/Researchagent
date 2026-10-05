@@ -74,7 +74,11 @@ class BGEReranker:
             model_path, device=device, max_length=512,
             automodel_args={"low_cpu_mem_usage": False},
         )
-        # print(f'self._model is {self._model}')
+        # 防御：确认精排器加载后没有 meta 张量（BGE-M3 才是 meta 的高危者，
+        # 这里留个哨兵，若它也中招能第一时间在日志露头）。
+        _meta = [n for n, p in self._model.named_parameters() if p.is_meta]
+        if _meta:
+            logger.error("reranker.meta_params_present", count=len(_meta), sample=_meta[:3])
         logger.info("reranker.loaded", model_id=model_path)
     @classmethod
     def get_instance(cls) -> "BGEReranker":
