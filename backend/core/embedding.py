@@ -104,7 +104,21 @@ class BGEMEmbedder:
             kwargs["low_cpu_mem_usage"] = False
             return _orig_from_pretrained(model_name_or_path, *args, **kwargs)
 
-        transformers.AutoModel.from_pretrained = _dtype_shim
+        # 兼容性补丁 #3：load_state_dict 强制 assign=True。
+        # 实测（服务器日志 + 本机复现）：BGE-M3 的 EncoderOnlyEmbedderRunner.get_model
+        # 把主模型建在 meta 占位上再 load_state_dict，而 load_state_dict 默认 assign=False
+        # 在目标张量是 meta 时是【no-op】（torch 警告 "copying from a non-meta parameter
+        # in the checkpoint to a meta parameter ... which is a no-op"）—— 权重被原地丢弃，
+        # 编码时 self.model.to(device) 就抛 "Cannot copy out of meta tensor"。
+        # 即便上面注入 low_cpu_mem_usage=False，也无法拦这条 FlagEmbedding 自建的 meta 路径。
+        # 用 assign=True 让 checkpoint 张量【替换】占位而非拷贝进（no-op），权重真正进体。
+        # 只在该模型加载期间临时全局替换，加载完立即还原，与 #2 垫片同模式。
+        _orig_load_state_dict = torch.nn.Module.load_state_dict
+
+        def _assign_state_dict_shim(self, state_dict, strict=True, assign=True, **_):
+            return _orig_load_state_dict(self, state_dict, strict=strict, assign=assign)
+
+        torch.nn.Module.load_state_dict = _assign_state_dict_shim
         try:
             self._model = BGEM3FlagModel(
                 model_name_or_path=model_path,
@@ -113,6 +127,7 @@ class BGEMEmbedder:
             )
         finally:
             transformers.AutoModel.from_pretrained = _orig_from_pretrained
+            torch.nn.Module.load_state_dict = _orig_load_state_dict
         # 防御：加载完扫一遍，确认没有残留 meta 张量（真实权重若停在 meta，
         # encode 时 .to(device) 必炸；低内存下 accelerate 会偷偷把它落下）。
         _meta = [n for n, p in self._model.model.named_parameters() if p.is_meta]
