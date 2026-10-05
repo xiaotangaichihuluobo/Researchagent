@@ -2,7 +2,18 @@
 transformers==4.51.0
 sentence-transformers==3.3.1
 sentencepiece==0.2.1
-torch==2.5.1
+# torch 分平台定位 + 钉 2.4.x：
+#  - Windows(本地含 RTX)：默认 wheel，CUDA 可用，本地训练正常
+#  - linux(Docker CPU 服务器)：只装 +cpu，避免拖 ~3.5GB 的 nvidia-* CUDA 库
+# 钉 2.4 而非 2.5/2.6：torch 2.5 起禁止对 meta 张量做 .to()，BGE-Reranker 的
+# CrossEncoder 在 2.5 下会抛 “Cannot copy out of meta tensor; no data!”(见
+# reranker.py:69 注释)。2.4 无此严格检查，low_cpu_mem_usage:False 能真正生效。
+# +cpu 局部版本只发布在 PyTorch 官方 CPU wheels 源，故须挂 extra-index-url；
+# 若国内构建访问不了 download.pytorch.org，把下面 linux 行改回 torch==2.4.1
+# (plain，会装成 CUDA 版、镜像偏重，但能跑)。
+--extra-index-url https://download.pytorch.org/whl/cpu/
+torch==2.4.1; sys_platform == "win32"
+torch==2.4.1+cpu; sys_platform == "linux"
 FlagEmbedding>=1.2.0
 # 直接调用 snapshot_download 把缺失模型下载到配置路径（transformers 的传递依赖，这里显式声明）
 huggingface-hub>=0.23.2,<1.0
