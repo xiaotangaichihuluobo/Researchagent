@@ -502,7 +502,9 @@ async def generate_web_node(state: dict, streamer=None) -> dict:
 
     answer = await _generate(streamer, 0.3, prompt)
     if urls:
-        answer += "\n\n🔗 **联网来源**\n" + "\n".join(f"  • {u}" for u in urls)
+        # 统一用「参考来源」作唯一标签：RAG 检索(nodes.py:445)、本联网兜底、agentic
+        # 三路都拼这个，避免同一批链接在「🔗 联网来源」和「📚 参考来源」两个标签下重复出现。
+        answer += "\n\n📚 **参考来源**\n" + "\n".join(f"  • {u}" for u in urls)
     return {"answer": answer, "sources": urls, "answer_mode": "web",
             "confidence": state.get("confidence", 0.0)}
 

@@ -265,12 +265,10 @@ async function clearAll() {
   ElMessage.success('已清空')
 }
 
-async function switchSession(id: string) {
-  if (id === currentId.value) return
-  // 正在为旧会话流式时切走：立刻 abort 那个流，别让它的增量/收尾落到新会话上。
-  abortStream()
-  currentId.value = id
-  streamText.value = ''
+// 按会话拉历史并铺进消息区。切换会话、以及初始进入自动选中会话都复用这套。
+// 抽出来是因为：进页面时 loadFromBackend 只是「选中」了最近会话、并不拉历史，
+// 右边消息区会空着 —— 历史上只有手动 switchSession 才 getHistory。
+async function loadMessages(id: string) {
   try {
     const h = await getHistory(id)
     messages.value = h.messages.map(m => ({
@@ -281,6 +279,15 @@ async function switchSession(id: string) {
   } catch {
     messages.value = []
   }
+}
+
+async function switchSession(id: string) {
+  if (id === currentId.value) return
+  // 正在为旧会话流式时切走：立刻 abort 那个流，别让它的增量/收尾落到新会话上。
+  abortStream()
+  currentId.value = id
+  streamText.value = ''
+  await loadMessages(id)
 }
 
 function extractSources(content: string): string[] {
@@ -376,6 +383,11 @@ function pushSourcesFrom(content: string): string[] {
 onMounted(async () => {
   // 会话列表以后端 /qa/sessions 为权威：进来先拉一次，旧的 uuidv4 本地假 ID 不再生成。
   await loadFromBackend()
+  // loadFromBackend 只是选中了最近会话、没拉它的消息历史 —— 这里补拉一次，
+  // 否则进页面右侧对话区是空的，得手动点一下别的会话才显示。
+  if (currentId.value) {
+    await loadMessages(currentId.value)
+  }
 })
 </script>
 
