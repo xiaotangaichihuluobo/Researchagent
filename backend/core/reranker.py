@@ -13,7 +13,8 @@ logger = get_logger(__name__)
 backend_path = os.path.dirname(os.path.dirname(__file__))
 RERANK_MAX_INPUT_CHARS = 512   # 截断过长文档，防止超出 CrossEncoder max_length=512
 # 本地缺模型时，从这里联网把权重下载到配置路径。与本地目录名保持一致（见 README）。
-RERANKER_REPO_ID = "BAAI/bge-reranker-large"
+# large→base：A 方案（4G 服务器），1.1G→0.55G，换内存余量换轻微精度损失。
+RERANKER_REPO_ID = "BAAI/bge-reranker-base"
 
 
 @dataclass
@@ -74,11 +75,7 @@ class BGEReranker:
             model_path, device=device, max_length=512,
             automodel_args={"low_cpu_mem_usage": False},
         )
-        # 防御：确认精排器加载后没有 meta 张量（BGE-M3 才是 meta 的高危者，
-        # 这里留个哨兵，若它也中招能第一时间在日志露头）。
-        _meta = [n for n, p in self._model.model.named_parameters() if p.is_meta]
-        if _meta:
-            logger.error("reranker.meta_params_present", count=len(_meta), sample=_meta[:3])
+        # print(f'self._model is {self._model}')
         logger.info("reranker.loaded", model_id=model_path)
     @classmethod
     def get_instance(cls) -> "BGEReranker":

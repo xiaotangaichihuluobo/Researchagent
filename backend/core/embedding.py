@@ -58,11 +58,13 @@ class BGEMEmbedder:
 
         logger.info("bge_m3.loading", model_path=model_path)
 
-        # ── fp16 仅在 CUDA 上启用，MPS（Apple M系列）不启用 ──
-        # MPS 在 BGE-M3 attention 矩阵乘法上会触发 LLVM ERROR，
-        # CPU 模式下用 fp32，速度稍慢但稳定。
-        # _device = "cuda:0" if torch.cuda.is_available() else "cpu"
-        _use_fp16 = torch.cuda.is_available()
+        # ── 一律 FP16：嵌入模型是内存大头（fp32 2.2G / fp16 ~1.1G）──────
+        # A 方案（4G 服务器）：QA 一次检索需 BGE-M3 编码 + reranker 精排【同时常驻】
+        # 同一进程，fp32 加起来超过容器/物理内存上限，transformers 便软降级成空 meta
+        # 张量（"Cannot copy out of meta tensor"），检索必空。FP16 把 BGE-M3 砍半，
+        # 与 reranker-base 一起把峰值压到 ~2.3G，才塞得进 3.6G。
+        # x86 Linux CPU 无 MPS 的 LLVM 问题，fp16 精度对检索向量足够、稳定。
+        _use_fp16 = True
 
         # ── 兼容性补丁 #2：FlagEmbedding<=1.4.2 把 torch_dtype 以裸 `dtype=`
         # 传给 AutoModel.from_pretrained（见其 finetune runner 的 get_model），
@@ -85,14 +87,6 @@ class BGEMEmbedder:
         def _dtype_shim(model_name_or_path, *args, **kwargs):
             """把裸 dtype 翻译成 AutoModel 认的 torch_dtype 的垫片。
 
-            顺带强制 low_cpu_mem_usage=False：
-            FlagEmbedding 的 EncoderOnlyEmbedderRunner.get_model 调 AutoModel.
-            from_pretrained 时不传 low_cpu_mem_usage，transformers 在低内存
-            （本进程同模型堆 BGE-M3 2.2G 后再加载）且带了 torch_dtype 时，会走
-            accelerate 的 meta 分片加载 —— 权重留在 meta 占位，编码时
-            self.model.to(device) 就抛 “Cannot copy out of meta tensor”。
-            这里把开关钉成 False，堵死 meta 路径。
-
             :param model_name_or_path: 传给 from_pretrained 的模型名称或路径
             :param args: 透传给 from_pretrained 的位置参数
             :param kwargs: 透传的关键字参数；含裸 dtype 时转成 torch_dtype
@@ -100,25 +94,9 @@ class BGEMEmbedder:
             """
             if "dtype" in kwargs and "torch_dtype" not in kwargs:
                 kwargs["torch_dtype"] = kwargs.pop("dtype")
-            # 钉死 False：不信任 transformers 在低内存下的默认自动加速分片判断
-            kwargs["low_cpu_mem_usage"] = False
             return _orig_from_pretrained(model_name_or_path, *args, **kwargs)
 
-        # 兼容性补丁 #3：load_state_dict 强制 assign=True。
-        # 实测（服务器日志 + 本机复现）：BGE-M3 的 EncoderOnlyEmbedderRunner.get_model
-        # 把主模型建在 meta 占位上再 load_state_dict，而 load_state_dict 默认 assign=False
-        # 在目标张量是 meta 时是【no-op】（torch 警告 "copying from a non-meta parameter
-        # in the checkpoint to a meta parameter ... which is a no-op"）—— 权重被原地丢弃，
-        # 编码时 self.model.to(device) 就抛 "Cannot copy out of meta tensor"。
-        # 即便上面注入 low_cpu_mem_usage=False，也无法拦这条 FlagEmbedding 自建的 meta 路径。
-        # 用 assign=True 让 checkpoint 张量【替换】占位而非拷贝进（no-op），权重真正进体。
-        # 只在该模型加载期间临时全局替换，加载完立即还原，与 #2 垫片同模式。
-        _orig_load_state_dict = torch.nn.Module.load_state_dict
-
-        def _assign_state_dict_shim(self, state_dict, strict=True, assign=True, **_):
-            return _orig_load_state_dict(self, state_dict, strict=strict, assign=assign)
-
-        torch.nn.Module.load_state_dict = _assign_state_dict_shim
+        transformers.AutoModel.from_pretrained = _dtype_shim
         try:
             self._model = BGEM3FlagModel(
                 model_name_or_path=model_path,
@@ -127,12 +105,6 @@ class BGEMEmbedder:
             )
         finally:
             transformers.AutoModel.from_pretrained = _orig_from_pretrained
-            torch.nn.Module.load_state_dict = _orig_load_state_dict
-        # 防御：加载完扫一遍，确认没有残留 meta 张量（真实权重若停在 meta，
-        # encode 时 .to(device) 必炸；低内存下 accelerate 会偷偷把它落下）。
-        _meta = [n for n, p in self._model.model.named_parameters() if p.is_meta]
-        if _meta:
-            logger.error("bge_m3.meta_params_present", count=len(_meta), sample=_meta[:3])
         logger.info("bge_m3.loaded", use_fp16=_use_fp16)
 
     @classmethod

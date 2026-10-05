@@ -69,7 +69,7 @@ class Settings(BaseSettings):
     qwen_model: str = "qwen-turbo"                          # 通用稳定款，不新不旧
 
     # ── 本地模型权重路径 ──
-    reranker_model_path: str = "./models/reranker/bge-reranker-large"    # 精排模型
+    reranker_model_path: str = "./models/reranker/bge-reranker-base"    # 精排模型
     bge_m3_model_path: str = "./models/embedding/bge-m3"                 # 嵌入模型
 
     # ── 本地 Query 分类模型权重路径（QA 三层分类的 L2）──
