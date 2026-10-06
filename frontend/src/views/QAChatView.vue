@@ -274,7 +274,11 @@ async function loadMessages(id: string) {
     messages.value = h.messages.map(m => ({
       role: m.role,
       content: m.content,
-      sources: m.role === 'assistant' ? extractSources(m.content) : undefined,
+      // 现行数据来源随消息持久化在 sources 列、直接读；老数据（无 sources 列之前）
+      // 来源仍内嵌在正文「📚 参考来源」段里，回退 extractSources 解析，不丢。
+      sources: m.role === 'assistant'
+        ? ((m.sources && m.sources.length) ? m.sources : extractSources(m.content))
+        : undefined,
     }))
   } catch {
     messages.value = []
@@ -291,7 +295,8 @@ async function switchSession(id: string) {
 }
 
 function extractSources(content: string): string[] {
-  // 后端把来源以「📚 参考来源\n • url」附在回答尾部，这里还原成独立来源条
+  // 老数据兜底：来源仍内嵌在正文「📚 参考来源\n • url」段里，这里还原成独立来源条。
+  // 新数据来源随消息持久化在 sources 字段、直接读，不走这里。
   const urls: string[] = []
   const re = /^\s*[•-]\s*(https?:[^\s]+)/gm
   for (const m of content.matchAll(re)) urls.push(m[1])

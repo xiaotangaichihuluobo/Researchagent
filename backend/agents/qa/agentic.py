@@ -185,8 +185,7 @@ async def run_agentic(state: dict, streamer=None) -> None:
         query=query, history=history, summary=summary, context=context,
         profile=profile)
     answer = await nodes._generate(streamer, 0.3, answer_prompt)
-    if sources:
-        answer += "\n\n📚 **参考来源**\n" + "\n".join(f"  • {s}" for s in sources)
+    # 同 RAG/联网：来源不内嵌正文，由前端经结构化 sources 在气泡外渲染。
     state.update({
         "answer": answer, "sources": sources,
         "answer_mode": "agentic",

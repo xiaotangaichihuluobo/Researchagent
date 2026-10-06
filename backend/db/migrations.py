@@ -109,6 +109,10 @@ _MIGRATIONS: list[tuple[str, str]] = [
         " ON qa_messages (thread_id, seq)",
     ),
     (
+        "qa_messages 助手消息参考来源(JSON 数组)",
+        "ALTER TABLE qa_messages ADD COLUMN IF NOT EXISTS sources TEXT",
+    ),
+    (
         "knowledge_pending_queue 低置信度待补充问题",
         "CREATE TABLE IF NOT EXISTS knowledge_pending_queue ("
         " id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),"

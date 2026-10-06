@@ -440,10 +440,10 @@ async def generate_rag_node(state: dict, streamer=None) -> dict:
         system=system, history=history, context=context, query=query)
 
     answer = await _generate(streamer, 0.3, prompt)
-    final = answer
-    if sources:
-        final += "\n\n📚 **参考来源**\n" + "\n".join(f"  • {s}" for s in sources)
-    return {"answer": final, "sources": sources, "answer_mode": "rag",
+    # 正文不再内嵌「参考来源」段：来源由前端在气泡外单独渲染（结构化 sources，
+    # 流式 meta 事件 / 非流式响应都带）。落库时 sources 持久化进 qa_messages.sources，
+    # 历史重载也从结构化 sources 取，不回退正文解析。
+    return {"answer": answer, "sources": sources, "answer_mode": "rag",
             "confidence": state.get("confidence", 0.0)}
 
 
@@ -501,10 +501,7 @@ async def generate_web_node(state: dict, streamer=None) -> dict:
         system=system, history=history, context=context, query=query)
 
     answer = await _generate(streamer, 0.3, prompt)
-    if urls:
-        # 统一用「参考来源」作唯一标签：RAG 检索(nodes.py:445)、本联网兜底、agentic
-        # 三路都拼这个，避免同一批链接在「🔗 联网来源」和「📚 参考来源」两个标签下重复出现。
-        answer += "\n\n📚 **参考来源**\n" + "\n".join(f"  • {u}" for u in urls)
+    # 与 RAG 同规约：来源不内嵌正文，由前端经结构化 sources 在气泡外渲染。
     return {"answer": answer, "sources": urls, "answer_mode": "web",
             "confidence": state.get("confidence", 0.0)}
 
@@ -620,7 +617,9 @@ async def save_memory_node(state: dict) -> dict:
     segments = list(state.get("segments") or [])     # 中程（最近在前）
 
     try:
-        await qa_repo.append_messages(thread_id, raw_query, answer)
+        await qa_repo.append_messages(
+            thread_id, raw_query, answer,
+            sources=state.get("sources") or [])
     except Exception as e:
         logger.warning("qa.save_messages_failed", error=str(e))
         # F 铁律：落库失败的载荷不丢，进死信供人工复核。

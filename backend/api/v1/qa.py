@@ -38,6 +38,7 @@ class ChatResponse(BaseModel):
 class SessionMessage(BaseModel):
     role: str    # "user" / "assistant"
     content: str
+    sources: list[str] = []   # 助手消息的参考来源；正文不再内嵌「📚 参考来源」段，前端经此字段在气泡外渲染
 
 
 class SessionSummaryResponse(BaseModel):
@@ -242,7 +243,8 @@ async def get_session_history(session_id: str,
     summary = await qa_repo.get_summary(thread_id)
     return HistoryResponse(
         session_id=session_id,
-        messages=[SessionMessage(role=m["role"], content=m["content"]) for m in msgs],
+        messages=[SessionMessage(role=m["role"], content=m["content"],
+                                 sources=m.get("sources") or []) for m in msgs],
         summary=summary,
         total_turns=sum(1 for m in msgs if m["role"] == "user"),
     )

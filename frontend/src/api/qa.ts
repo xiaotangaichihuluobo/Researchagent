@@ -10,7 +10,7 @@ export interface ChatResult {
 
 export interface HistoryResult {
   session_id: string
-  messages: { role: 'user' | 'assistant'; content: string }[]
+  messages: { role: 'user' | 'assistant'; content: string; sources?: string[] }[]
   summary: string | null
   total_turns: number
 }

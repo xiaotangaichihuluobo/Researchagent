@@ -37,19 +37,34 @@ def build_thread_id(user_id: str, session_id: str) -> str:
 
 
 async def get_messages(thread_id: str, limit: int = 100) -> list[dict]:
-    """按出现顺序取该线程的历史消息：[{role, content, seq}]。seq 供分层压缩的游标用。
+    """按出现顺序取该线程的历史消息：[{role, content, seq, sources}]。seq 供分层压缩的游标用。
+
+    老数据（无 sources 列之前）来源为空列表；新数据由 append_messages 持久化的
+    JSON 数组还原。历史加载不再依赖解析正文里的「📚 参考来源」段。
 
     :param thread_id: 对话线程 ID（build_thread_id 生成）
     :param limit: 最多返回的历史消息条数，默认 100
-    :return: 消息列表，每项含 role/content/seq 三个键，按 seq 升序排列
+    :return: 消息列表，每项含 role/content/seq/sources 四键，按 seq 升序排列
     """
+    import json as _json
     async with AsyncSessionLocal() as session:
         result = await session.execute(
-            text("SELECT role, content, seq FROM qa_messages"
+            text("SELECT role, content, seq, sources FROM qa_messages"
                  " WHERE thread_id = :tid ORDER BY seq ASC LIMIT :lim"),
             {"tid": thread_id, "lim": limit},
         )
-        return [{"role": r[0], "content": r[1], "seq": r[2]} for r in result.all()]
+        msgs = []
+        for r in result.all():
+            raw = r[3]
+            if raw:
+                try:
+                    sources = _json.loads(raw) if not isinstance(raw, list) else raw
+                except Exception:
+                    sources = []
+            else:
+                sources = []
+            msgs.append({"role": r[0], "content": r[1], "seq": r[2], "sources": sources})
+        return msgs
 
 
 async def delete_user_session(tenant_id: str, user_id: str,
@@ -174,24 +189,32 @@ async def get_memory(thread_id: str) -> tuple[Optional[str], list[dict]]:
 
 
 async def append_messages(thread_id: str, user_content: str,
-                          assistant_content: str) -> None:
+                          assistant_content: str,
+                          sources: list[str] | None = None) -> None:
     """把一轮「用户问 + 助手答」追加进消息流，seq 递增保证顺序。
+
+    助手消息的参考来源以 JSON 数组持久化到 sources 列（正文不再内嵌「📚 参考来源」
+    段，来源交给前端在气泡外单独渲染）。历史上用户消息无来源，sources 列留空。
 
     :param thread_id: 对话线程 ID
     :param user_content: 用户本轮提问原文
     :param assistant_content: 助手本轮回答原文
+    :param sources: 助手回答的参考来源标签列表；可选，缺省空列表。
     :return: 无返回值
     """
+    import json as _json
+    sources_json = _json.dumps(sources or [], ensure_ascii=False)
     async with AsyncSessionLocal() as session:
         next_seq = int((await session.execute(
             text("SELECT COALESCE(MAX(seq), 0) FROM qa_messages WHERE thread_id = :tid"),
             {"tid": thread_id},
         )).scalar_one()) + 1
         await session.execute(
-            text("INSERT INTO qa_messages (thread_id, role, content, seq)"
-                 " VALUES (:tid, 'user', :u, :seq0), (:tid, 'assistant', :a, :seq1)"),
+            text("INSERT INTO qa_messages (thread_id, role, content, seq, sources)"
+                 " VALUES (:tid, 'user', :u, :seq0, NULL),"
+                 "        (:tid, 'assistant', :a, :seq1, :src)"),
             {"tid": thread_id, "u": user_content, "a": assistant_content,
-             "seq0": next_seq, "seq1": next_seq + 1},
+             "src": sources_json, "seq0": next_seq, "seq1": next_seq + 1},
         )
         await session.commit()
 
