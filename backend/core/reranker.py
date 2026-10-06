@@ -73,10 +73,16 @@ class BGEReranker:
         # “Cannot copy out of meta tensor; no data!”。直接正常载入权重即可。
         self._model = CrossEncoder(
             model_path, device=device, max_length=512,
-            automodel_args={"low_cpu_mem_usage": False},
+            automodel_args={
+                "low_cpu_mem_usage": False,
+                # fp16：4G 服务器上 BGE-M3(fp16 1.1G) + reranker 需同时常驻，
+                # fp32 base 1.1G 会把进程推到 3.6G 边缘、软降级成空 meta。fp16
+                # 把 reranker 砍半到 ~0.55G，峰值压回 ~2.8G 稳进限制。
+                "torch_dtype": torch.float16,
+            },
         )
         # print(f'self._model is {self._model}')
-        logger.info("reranker.loaded", model_id=model_path)
+        logger.info("reranker.loaded", model_id=model_path, dtype="fp16")
     @classmethod
     def get_instance(cls) -> "BGEReranker":
         """获取单例，首次调用时加载模型。

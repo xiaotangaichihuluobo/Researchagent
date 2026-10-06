@@ -67,11 +67,12 @@ async def lifespan(app: FastAPI):
         from backend.core.query_classifier import QueryClassifier     # 轨道 B L2 意图分类
 
         loop = asyncio.get_running_loop()
-        await asyncio.gather(                                    # 三个模型并行加载（各跑在线程池里）
-            loop.run_in_executor(None, BGEReranker.get_instance),
-            loop.run_in_executor(None, BGEMEmbedder.get_instance),
-            loop.run_in_executor(None, QueryClassifier.get_instance),
-        )
+        # 串行预热（不再并行）：4G 服务器上 BGE-M3(1.1G) 与 reranker(1.1G) 同时分配
+        # 会把峰值推过 3.6G，transformers 软降级成空 meta 张量 → 检索精排必炸。
+        # 逐个加载：reranker(小) → BGE-M3(大)，峰值只到单个模型，稳稳进 3.6G。
+        await loop.run_in_executor(None, BGEReranker.get_instance)
+        await loop.run_in_executor(None, BGEMEmbedder.get_instance)
+        await loop.run_in_executor(None, QueryClassifier.get_instance)
         logger.info("app.local_models_warmed_up")
     except Exception as e:
         logger.warning("app.local_models_warmup_failed | error=%s", e)  # 预热失败也不拦启动
