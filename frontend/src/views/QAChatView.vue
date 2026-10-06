@@ -51,9 +51,12 @@
           <div v-if="m.role === 'assistant' && m.aborted" class="interrupted-tag">⚠️ 已中断，继续提问后回答未能完成</div>
           <div v-if="m.sources && m.sources.length" class="sources">
             <span class="sources-label">参考来源</span>
-            <a v-for="(src, si) in m.sources" :key="si" :href="src" target="_blank" rel="noopener" class="chip">
-              {{ src }}
-            </a>
+            <!-- 只有真实 URL（如联网搜索结果）渲染成可点击链接；研报来源是「研报 · 代码 · 类型」
+                 这类标签，点了会导航到无意义地址，只作展示。 -->
+            <template v-for="(src, si) in m.sources" :key="si">
+              <a v-if="isUrl(src)" :href="src" target="_blank" rel="noopener" class="chip">{{ src }}</a>
+              <span v-else class="chip">{{ src }}</span>
+            </template>
           </div>
         </div>
       </div>
@@ -383,6 +386,11 @@ async function send() {
 
 function pushSourcesFrom(content: string): string[] {
   return extractSources(content)
+}
+
+// 只有真实 URL 的来源才渲染成可点击链接；「研报 · 代码 · 类型」这类标签只展示。
+function isUrl(v: string): boolean {
+  return /^https?:\/\//i.test(v)
 }
 
 onMounted(async () => {
